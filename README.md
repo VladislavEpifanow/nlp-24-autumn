@@ -25,3 +25,4 @@
 | Project name | Student name |
 | --- | --- |
 | [emoji-labeller](/projects/emoji-labeller) | Иванов Иван Иванович |
+| [ vas-news-labeller](/projects/vas-news-labeller) | Лисицина Василиса Васильевна |
