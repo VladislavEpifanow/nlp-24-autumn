@@ -25,3 +25,4 @@
 | Project name | Student name |
 | --- | --- |
 | [emoji-labeller](/projects/emoji-labeller) | Иванов Иван Иванович |
+| [danishevskiy-lab](/projects/danishevskiy-lab) | Данишевский Никита Сергеевич |
