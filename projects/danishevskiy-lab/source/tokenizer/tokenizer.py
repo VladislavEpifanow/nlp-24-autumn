@@ -9,14 +9,14 @@ stemmer = SnowballStemmer(language='english')
 lemmatizer = WordNetLemmatizer()
 
 sentence_pattern_split = r'(?<=\.|!|\?)(?<![A-Z]{1}\.)(\s)'
-word_pattern = r'#TOKEN#|[A-Za-z]+[\'\`][a-z]|\w+' + '|' + r'(?<![A-Z])\.\.\.|\.|,|!|\?|:|;'
+word_pattern = r'#TOKEN#|[A-Za-z]+[a-z]|\w+' + '|' + r'(?<![A-Z])\.\.\.|\.|,|!|\?|:|;'
 
 token_specification = {
     'DATE':     r'\b(\d{1,2})[.\-/](\d{2})[.\-/](\d{2,4})\b|' + \
                     r'\b(\d{2})\s([A-Z][a-z]+)\s(\d{4})\b',
     'PHONE':    r'(?:\+7[\s-]?\d{3}[\s-]?\d{3}[\s-]?\d{4})|'    +\
                     r'(?:8[\s-]?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4})',
-    'EMAIL':    r'(:?[a-zA-Z0-9_.+-]+@[a-pr-zA-PRZ0-9-]+\.[!\w\d+-]+)',
+    'EMAIL':    r'(:?[a-zA-Z0-9_.+-]+@[a-zA-Z0-9]+[a-zA-Z0-9_.+-]+)',
     'TIME':     r'[0-2][0-9]:[0-5][0-9]:[0-5][0-9]|' +\
                     r'[0-2][0-9]:[0-5][0-9]|'+\
                     r'[0-2]?[0-9]:[0-5][0-9]\s([APap][Mm])',

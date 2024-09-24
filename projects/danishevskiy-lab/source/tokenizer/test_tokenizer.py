@@ -2,7 +2,7 @@ from .tokenizer import token_specification
 import re
 
 def test_mail_boxes():
-    emails = ['danishevskiy.ns@gmail.com','testmail@gmal.com', 'test_email@gmail.com']
+    emails = ['danishevskiy.ns@gmail.com','testmail@gmal.com', 'test_email@gmail.com', 'test_email@gmail.com.edu.ca']
     string = 'My email is {email}, write me'
 
     pattern = token_specification['EMAIL']
