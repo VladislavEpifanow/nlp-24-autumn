@@ -1,7 +1,7 @@
 import itertools
+import math
 import os
 from functools import reduce
-from math import sqrt
 
 import nltk
 import regex
@@ -86,10 +86,59 @@ def calc_t_score(data: list[tuple[str, ...]]):
             words_stats[w] = words_stats.get(w, 0) + 1
     total_num = sum(words_stats.values())
     n_gram_score = {}
+    gram_len = len(n_gram)
+
     for n_gram, value in n_gram_stats.items():
-        score = (value - product(n_gram) / total_num ** (len(n_gram) - 1)) / sqrt(value)
+        score = (value - (product(n_gram) / total_num ** (gram_len + 1))) / value ** 0.5  # (value ** (1 / gram_len))
         n_gram_score[n_gram] = score
     return n_gram_score
+
+
+def calc_log_likelihood(data: list[tuple[str, ...]]):
+    n_gram_stats = {}
+    words_stats = {}
+    for n_gram in tqdm(data, desc="calculating log-likelihood"):
+        n_gram_stats[n_gram] = n_gram_stats.get(n_gram, 0) + 1
+        for w in n_gram:
+            words_stats[w] = words_stats.get(w, 0) + 1
+    total_num = sum(n_gram_stats.values())
+    gram_len = len(n_gram)
+
+    n_gram_score = {}
+    for n_gram, value in n_gram_stats.items():
+        x_1 = words_stats[n_gram[0]] / total_num
+        x_2 = words_stats[n_gram[1]] / total_num
+        x_3 = words_stats[n_gram[2]] / total_num
+        x_13 = x_1 * x_3
+        x_23 = x_2 * x_3
+        expected = x_13 * x_23
+        score = gram_len * value + math.log(value / expected)
+        n_gram_score[n_gram] = score
+    return n_gram_score
+
+
+# def calc_log_likelihood(data: list[tuple[str, ...]]):
+#     def product(n_gram):
+#         value = 1
+#         for w in n_gram:
+#             value *= words_stats[w]
+#         return value
+#
+#     n_gram_stats = {}
+#     words_stats = {}
+#     for n_gram in tqdm(data, desc="calculating log-likelihood"):
+#         n_gram_stats[n_gram] = n_gram_stats.get(n_gram, 0) + 1
+#         for w in n_gram:
+#             words_stats[w] = words_stats.get(w, 0) + 1
+#     total_num = sum(words_stats.values())
+#     gram_len = len(n_gram)
+#
+#     n_gram_score = {}
+#     for n_gram, value in n_gram_stats.items():
+#         expected_count = product(n_gram) / (total_num ** (gram_len - 1))
+#         score = 2 * value * math.log(value / expected_count)
+#         n_gram_score[n_gram] = score
+#     return n_gram_score
 
 
 def save_results(data, path: str):
@@ -102,8 +151,15 @@ def save_results(data, path: str):
 def trigram_t_score(tokens):
     from nltk import TrigramCollocationFinder
     trigram_measures = nltk.collocations.TrigramAssocMeasures()
-    finder_bi = TrigramCollocationFinder.from_words(tokens)
-    return finder_bi.score_ngrams(trigram_measures.student_t)
+    finder_tri = TrigramCollocationFinder.from_words(tokens)
+    return finder_tri.score_ngrams(trigram_measures.student_t)
+
+
+def trigram_log_likelihood(tokens):
+    from nltk import TrigramCollocationFinder
+    trigram_measures = nltk.collocations.TrigramAssocMeasures()
+    finder_tri = TrigramCollocationFinder.from_words(tokens)
+    return finder_tri.score_ngrams(trigram_measures.likelihood_ratio)
 
 
 if __name__ == "__main__":
@@ -121,16 +177,30 @@ if __name__ == "__main__":
     split_type = "train"
     word_type = "token"
     n = 3
+    mesure = "t-score"
+    # mesure = "log"
 
     data = process_data(path, split_type, word_type, steps, limit=0)
     n_grams = get_n_grams(data, n)
-    t_data = calc_t_score(n_grams)
-    t_data = sorted(t_data.items(), key=lambda x: -x[1])[0:30]
-    save_results(t_data,
-                 r"C:\Users\Alex\PycharmProjects\nlp-24-autumn\projects\yelp_labeller\assets\example\my_t_score_v3.tsv")
-    print(t_data[0:30])
-    nltk_data = itertools.chain(*data)
-    nltk_t_score = trigram_t_score(nltk_data)
-    print(nltk_t_score[0:30])
-    save_results(nltk_t_score[0:30],
-                 r"C:\Users\Alex\PycharmProjects\nlp-24-autumn\projects\yelp_labeller\assets\example\nltk_t_score_v3.tsv")
+    if mesure == 't-score':
+        t_data = calc_t_score(n_grams)
+        t_data = sorted(t_data.items(), key=lambda x: -x[1])[0:30]
+        save_results(t_data,
+                     r"C:\Users\Alex\PycharmProjects\nlp-24-autumn\projects\yelp_labeller\assets\example\my_t_score_v3.tsv")
+        print(t_data[0:30])
+        nltk_data = LIST(itertools.chain(*data))
+        nltk_t_score = trigram_t_score(nltk_data)
+        print(nltk_t_score[0:30])
+        save_results(nltk_t_score[0:30],
+                     r"C:\Users\Alex\PycharmProjects\nlp-24-autumn\projects\yelp_labeller\assets\example\nltk_t_score_v3.tsv")
+    elif mesure == "log":
+        t_data = calc_log_likelihood(n_grams)
+        t_data = sorted(t_data.items(), key=lambda x: -x[1])[0:30]
+        save_results(t_data,
+                     r"C:\Users\Alex\PycharmProjects\nlp-24-autumn\projects\yelp_labeller\assets\example\my_log_v3.tsv")
+        print(t_data[0:30])
+        nltk_data = itertools.chain(*data)
+        nltk_t_score = trigram_log_likelihood(nltk_data)
+        print(nltk_t_score[0:30])
+        save_results(nltk_t_score[0:30],
+                     r"C:\Users\Alex\PycharmProjects\nlp-24-autumn\projects\yelp_labeller\assets\example\nltk_log_v3.tsv")
