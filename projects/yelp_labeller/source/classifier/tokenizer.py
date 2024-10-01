@@ -1,12 +1,13 @@
 import itertools
 import re
 
-pattern = r"{abbr_patterns}|({phone_pattern})|({email_pattern})|(\'?[\w\-]+)|([^A-Za-z0-9 \n])"
+pattern = r"{price_pattern}|{abbr_patterns}|({phone_pattern})|({email_pattern})|(\'?[\w\-]+)|([^A-Za-z0-9 \n])"
 sent_pattern = r"((?<=\.|\?|!|\;))({abbr_patterns})\s"
 
 phone_pattern = r"\+?[0-9] ?\(?[0-9]+\)?[0-9 -]+"
 # [\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}
 email_pattern = r"[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+"
+price_pattern = r"(\$ ?\d*\.?\d+)|(\d*\.?\d+ ?\$)"
 
 english_abbr = ["Mr.", "Mrs.", "Mss.", "Ms.", "Dr."]
 english_abbr = [x.replace(".", "\.") for x in english_abbr]
@@ -17,7 +18,8 @@ sent_pattern = re.compile(sent_pattern)
 
 pattern = pattern.format(abbr_patterns="(" + "|".join(english_abbr) + ")",
                          phone_pattern=phone_pattern,
-                         email_pattern=email_pattern)
+                         email_pattern=email_pattern,
+                         price_pattern=price_pattern)
 
 word_pattern = re.compile(pattern)
 # print(word_pattern.pattern.replace(r"//", r"/"))
@@ -28,6 +30,10 @@ def tokenize(text: str):
     split_sentences = list(filter(lambda x: len(x) if x else False, sent_pattern.split(text)))
     # print(sent_pattern.pattern.replace(r"\\", "\\"))
     for sent in split_sentences:
+        # Удаляем экранированные символы
+        sent = re.sub(r"\\.", "", sent)
+        sent = re.sub(r"(=\s+)", "", sent)
+        # Удаляем пробелы
         sent = re.sub(r"\s+", " ", sent)
         words = list(filter(lambda x: x and len(x), itertools.chain(*word_pattern.findall(sent))))
         tokenized_sentences.append(words)

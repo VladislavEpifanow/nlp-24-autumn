@@ -43,6 +43,26 @@ class TestTokenization(unittest.TestCase):
         number = "321-56-75"
         self.assertEqual([[number]], tokenize(number) )
 
+    def test_prices(self):
+        price = "$800"
+        self.assertEqual([[price]], tokenize(price))
+        price = "$800.00"
+        self.assertEqual([[price]], tokenize(price))
+        price = "$ 800.00"
+        self.assertEqual([[price]], tokenize(price))
+        price = "800$"
+        self.assertEqual([[price]], tokenize(price))
+        price = "800.00$"
+        self.assertEqual([[price]], tokenize(price))
+        price = "800.00 $"
+        self.assertEqual([[price]], tokenize(price))
+        price = "1$"
+        self.assertEqual([[price]], tokenize(price))
+        price = "$8.09"
+        self.assertEqual([[price]], tokenize(price))
+        price = "8.12 $"
+        self.assertEqual([[price]], tokenize(price))
+
 
 if __name__ == "__main__":
     unittest.main()
