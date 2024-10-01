@@ -26,3 +26,4 @@
 | --- | --- |
 | [emoji-labeller](/projects/emoji-labeller) | Иванов Иван Иванович |
 | [ag-news-tasks](/projects/ag-news-tasks) | Епифанов Владислав Андреевич |
+| [ vas-news-labeller](/projects/vas-news-labeller) | Лисицина Василиса Васильевна |
