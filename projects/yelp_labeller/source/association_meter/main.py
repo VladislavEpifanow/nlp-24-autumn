@@ -8,6 +8,8 @@ import regex
 from nltk.corpus import stopwords
 from tqdm import tqdm
 
+from projects.yelp_labeller.source.association_meter.utils import persist_to_file
+
 # nltk.download('stopwords')
 stopwords = stopwords.words("english")
 
@@ -43,15 +45,15 @@ def apply_steps(word: str, steps: list):
     return word
 
 
-def get_n_grams(data: list[list[str]], n: int) -> list[tuple[str, ...]]:
+def get_n_grams(data: list[str], n: int) -> list[tuple[str, ...]]:
     processed_data = []
-    for file_data in tqdm(data, desc="generating n-grams"):
-        for i in range(0, len(file_data) - n + 1):
-            processed_data.append(tuple(sorted(file_data[i:i + n])))
+    for i in range(0, len(data) - n + 1):
+        processed_data.append(tuple(data[i:i + n]))
     return processed_data
 
 
-def process_data(path: str, split_type: str, word_type: str, process_steps: list, limit: int | None = None) -> list[
+@persist_to_file("cache_process_data")
+def process_data(path: str, split_type: str, word_type: str, limit: int | None = None) -> list[
     list[str]]:
     assert word_type in word_types.keys(), f"word type {word_type} not in word_types {word_types}"
     word_idx = word_types[word_type]
@@ -62,7 +64,7 @@ def process_data(path: str, split_type: str, word_type: str, process_steps: list
         processed_file_data = []
         for word_data in file_data:
             word = word_data[word_idx]
-            word = apply_steps(word, process_steps)
+            word = apply_steps(word, steps)
             if not word:
                 continue
             processed_file_data.append(word)
@@ -85,60 +87,61 @@ def calc_t_score(data: list[tuple[str, ...]]):
         for w in n_gram:
             words_stats[w] = words_stats.get(w, 0) + 1
     total_num = sum(words_stats.values())
-    n_gram_score = {}
-    gram_len = len(n_gram)
-
-    for n_gram, value in n_gram_stats.items():
-        score = (value - (product(n_gram) / total_num ** (gram_len + 1))) / value ** 0.5  # (value ** (1 / gram_len))
-        n_gram_score[n_gram] = score
-    return n_gram_score
-
-
-def calc_log_likelihood(data: list[tuple[str, ...]]):
-    n_gram_stats = {}
-    words_stats = {}
-    for n_gram in tqdm(data, desc="calculating log-likelihood"):
-        n_gram_stats[n_gram] = n_gram_stats.get(n_gram, 0) + 1
-        for w in n_gram:
-            words_stats[w] = words_stats.get(w, 0) + 1
-    total_num = sum(n_gram_stats.values())
     gram_len = len(n_gram)
 
     n_gram_score = {}
     for n_gram, value in n_gram_stats.items():
-        x_1 = words_stats[n_gram[0]] / total_num
-        x_2 = words_stats[n_gram[1]] / total_num
-        x_3 = words_stats[n_gram[2]] / total_num
-        x_13 = x_1 * x_3
-        x_23 = x_2 * x_3
-        expected = x_13 * x_23
-        score = gram_len * value + math.log(value / expected)
+        score = (value - (product(n_gram) / (total_num ** (gram_len - 1)))) / (
+                    value ** 0.5)  # (value ** (1 / gram_len))
         n_gram_score[n_gram] = score
     return n_gram_score
 
 
 # def calc_log_likelihood(data: list[tuple[str, ...]]):
-#     def product(n_gram):
-#         value = 1
-#         for w in n_gram:
-#             value *= words_stats[w]
-#         return value
-#
 #     n_gram_stats = {}
 #     words_stats = {}
 #     for n_gram in tqdm(data, desc="calculating log-likelihood"):
 #         n_gram_stats[n_gram] = n_gram_stats.get(n_gram, 0) + 1
 #         for w in n_gram:
 #             words_stats[w] = words_stats.get(w, 0) + 1
-#     total_num = sum(words_stats.values())
+#     total_num = sum(n_gram_stats.values())
 #     gram_len = len(n_gram)
 #
 #     n_gram_score = {}
 #     for n_gram, value in n_gram_stats.items():
-#         expected_count = product(n_gram) / (total_num ** (gram_len - 1))
-#         score = 2 * value * math.log(value / expected_count)
+#         x_1 = words_stats[n_gram[0]] / total_num
+#         x_2 = words_stats[n_gram[1]] / total_num
+#         x_3 = words_stats[n_gram[2]] / total_num
+#         x_13 = x_1 * x_3
+#         x_23 = x_2 * x_3
+#         expected = x_13 * x_23
+#         score = gram_len * value + math.log(value / expected)
 #         n_gram_score[n_gram] = score
 #     return n_gram_score
+
+
+def calc_log_likelihood(data: list[tuple[str, ...]]):
+    def product(n_gram):
+        value = 1
+        for w in n_gram:
+            value *= words_stats[w]
+        return value
+
+    n_gram_stats = {}
+    words_stats = {}
+    for n_gram in tqdm(data, desc="calculating log-likelihood"):
+        n_gram_stats[n_gram] = n_gram_stats.get(n_gram, 0) + 1
+        for w in n_gram:
+            words_stats[w] = words_stats.get(w, 0) + 1
+    total_num = len(n_gram_stats.keys())
+    gram_len = len(n_gram)
+
+    n_gram_score = {}
+    for n_gram, value in n_gram_stats.items():
+        expected_count = product(n_gram) / (total_num ** (gram_len - 1))
+        score = 2 * value * math.log(value / expected_count)
+        n_gram_score[n_gram] = score
+    return n_gram_score
 
 
 def save_results(data, path: str):
@@ -166,7 +169,7 @@ if __name__ == "__main__":
     steps = []
     # Шаг 2
     punkt_regex = r"[^\P{P}-]+"
-    punkt_step = lambda x: regex.sub(r"[^\P{P}-]+", "", x)
+    punkt_step = lambda x: regex.sub(punkt_regex, "", x)
     steps.append(punkt_step)
     # Шаг 3
     steps.append(lambda x: x.lower())
@@ -177,18 +180,18 @@ if __name__ == "__main__":
     split_type = "train"
     word_type = "token"
     n = 3
-    mesure = "t-score"
-    # mesure = "log"
+    # mesure = "t-score"
+    mesure = "log"
 
-    data = process_data(path, split_type, word_type, steps, limit=0)
-    n_grams = get_n_grams(data, n)
+    data = process_data(path, split_type, word_type, 0)
+    nltk_data = list(itertools.chain(*data))
+    n_grams = get_n_grams(nltk_data, n)
     if mesure == 't-score':
         t_data = calc_t_score(n_grams)
         t_data = sorted(t_data.items(), key=lambda x: -x[1])[0:30]
         save_results(t_data,
                      r"C:\Users\Alex\PycharmProjects\nlp-24-autumn\projects\yelp_labeller\assets\example\my_t_score_v3.tsv")
         print(t_data[0:30])
-        nltk_data = LIST(itertools.chain(*data))
         nltk_t_score = trigram_t_score(nltk_data)
         print(nltk_t_score[0:30])
         save_results(nltk_t_score[0:30],
