@@ -25,7 +25,7 @@ word_pattern = re.compile(pattern)
 # print(word_pattern.pattern.replace(r"//", r"/"))
 
 
-def tokenize(text: str):
+def tokenize(text: str) -> list[list[str]]:
     tokenized_sentences = []
     split_sentences = list(filter(lambda x: len(x) if x else False, sent_pattern.split(text)))
     # print(sent_pattern.pattern.replace(r"\\", "\\"))

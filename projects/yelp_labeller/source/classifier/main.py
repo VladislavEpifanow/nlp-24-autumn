@@ -9,9 +9,9 @@ from projects.yelp_labeller.source.classifier.tokenizer import tokenize
 
 # nltk.download('wordnet')
 
-def load_dataset(split_type="train", n: int | None = None):
+def load_dataset(split_type="train", n: int | None = None, dataset_path = "../../assets/{split_type}.csv"):
     assert split_type == "train" or split_type == "test"
-    dataset_path = f"../../assets/{split_type}.csv"
+    dataset_path = dataset_path.format(split_type=split_type)
     if not os.path.exists(dataset_path):
         splits = {'train': 'yelp_review_full/train-00000-of-00001.parquet',
                   'test': 'yelp_review_full/test-00000-of-00001.parquet'}

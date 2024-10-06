@@ -29,6 +29,15 @@ def data_iterator(path: str, split_type: str):
             yield data
     return
 
+steps = []
+# Шаг 2
+punkt_regex = r"[^\P{P}-]+"
+punkt_step = lambda x: regex.sub(punkt_regex, "", x)
+steps.append(punkt_step)
+# Шаг 3
+steps.append(lambda x: x.lower())
+# Шаг 4
+steps.append(lambda x: x if x not in stopwords else None)
 
 # Шаг 5
 word_types = {"token": 0,
@@ -164,16 +173,6 @@ def trigram_log_likelihood(tokens):
 
 
 if __name__ == "__main__":
-    steps = []
-    # Шаг 2
-    punkt_regex = r"[^\P{P}-]+"
-    punkt_step = lambda x: regex.sub(punkt_regex, "", x)
-    steps.append(punkt_step)
-    # Шаг 3
-    steps.append(lambda x: x.lower())
-    # Шаг 4
-    steps.append(lambda x: x if x not in stopwords else None)
-
     path = 'C:\\Users\\Alex\\PycharmProjects\\nlp-24-autumn\\projects\\yelp_labeller\\assets\\annotated-corpus-v3\\{split_type}'
     split_type = "train"
     word_type = "token"
