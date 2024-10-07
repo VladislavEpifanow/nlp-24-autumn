@@ -1,5 +1,6 @@
 import json
 import logging
+import os.path
 from collections import defaultdict
 
 import numpy as np
@@ -15,7 +16,7 @@ np.random.seed(42)
 
 import warnings
 
-warnings.filterwarnings("error")
+# warnings.filterwarnings("error")
 
 
 # Skip-gram
@@ -54,12 +55,38 @@ class Word2Vec:
     #     y = self.softmax(u)
     #     return y, h, u
 
+    def sigmoid(self, z):
+        return 1 / (1 + np.exp(-z))
+
     def forward(self, x):
-        h = np.dot(self.w1.T, x)
-        u = np.dot(self.w2.T, h)
+        h = np.dot(x, self.w1)
+        u = np.dot(h, self.w2)
         # y = self.softmax(u)
-        y = u
+        y = self.sigmoid(u)
         return y, h, u
+
+    # def backward(self, e, h, x):
+    #     dw2 = np.outer(h, e)
+    #     dw1 = np.outer(x, np.dot(self.w1, e.T))
+    #     self.w1 = self.w1 - (self.learning_rate * dw1)
+    #     self.w1 = self.w1 - (self.learning_rate * dw2)
+
+    def backward(self, e, h, x):
+        dw2 = np.outer(h, e)
+        dw1 = np.outer(x, self.w2 @ e)
+        self.w2 = self.w2 - (self.learning_rate * dw2)
+        self.w1 = self.w1 - (self.learning_rate * dw1)
+
+    def train(self, x, y):
+        self.initialize_weights()
+        for epoch in tqdm(range(self.epochs), desc="training"):
+            for sent_idx, sent_data in enumerate(zip(x, y)):
+                word_oh, context = sent_data
+                x_vector = self.onehot(word_oh)
+                y_vector = self.onehot(context)
+                y_pred, h, u = self.forward(x_vector)
+                e = y_vector - y_pred
+                self.backward(e, h, x_vector)
 
     def onehot(self, word_idx: int | list[int]):
         x = np.zeros(self.vocab_size)
@@ -70,10 +97,10 @@ class Word2Vec:
                 x[word_idx_] = 1
         return x
 
-    def generate_training_data(self, sentences, limit=0):
+    def generate_training_data(self, sentences, limit: int = 0):
         x = []
         y = []
-        if limit:
+        if limit > 0:
             sentences = sentences[:limit]
         for sentence in tqdm(sentences, desc="Generating train data"):
             sentence_idxs = [self.word_index[word] for word in sentence]
@@ -92,34 +119,13 @@ class Word2Vec:
                 y.append(context)
         return x, y
 
-    # def backward(self, e, h, x):
-    #     dw2 = np.outer(h, e)
-    #     dw1 = np.outer(x, np.dot(self.w1, e.T))
-    #     self.w1 = self.w1 - (self.learning_rate * dw1)
-    #     self.w1 = self.w1 - (self.learning_rate * dw2)
+    def dump(self, file_name: str):
+        np.save("w1_" + file_name, self.w1, allow_pickle=False)
+        np.save("w2_" + file_name, self.w1, allow_pickle=False)
 
-    def backward(self, e, h, x):
-        dw2 = np.outer(h, e)
-        dw1 = np.outer(x, np.dot(self.w2, e.T))
-        self.w1 = self.w1 - (self.learning_rate * dw1)
-        self.w2 = self.w2 - (self.learning_rate * dw2)
-
-    def train(self, x, y):
-        self.initialize_weights()
-        for epoch in tqdm(range(self.epochs), desc="training"):
-            for sent_idx, sent_data in enumerate(zip(x, y)):
-                word_oh, context = sent_data
-                x_vector = self.onehot(word_oh)
-                y_vector = self.onehot(context)
-                y_pred, h, u = self.forward(x_vector)
-                e = y_vector - y_pred
-                self.backward(e, h, word_oh)
-
-    def dump(self, file_name):
-        np.save(file_name, self.w1, allow_pickle=False)
-
-    def load(self, file_name):
-        self.w1 = np.load(file_name)
+    def load(self, file_name: str):
+        self.w1 = np.load("w1_" + file_name)
+        self.w2 = np.load("w2_" + file_name)
 
     def get_embedding(self, word: str):
         word_idx = self.word_index.get(word, None)
@@ -152,37 +158,7 @@ def get_words_cosine(w2v_model: Word2Vec, words: list[str]):
     return cosine_dict
 
 
-if __name__ == "__main__":
-    cache_name = r"./projects/yelp_labeller/source/association_meter/cache"
-    with open(cache_name, "r") as file:
-        data = json.load(file)
-    # data = [["I", "love", "NLP", "and", "word2vec"], ["I", "love", "deep", "learning"], ["NLP", "is", "fun"]]
-
-    embedding_size = 100
-    window_size = 5
-    lr = 0.00025
-    epochs = 5
-    limit = 5
-
-    word2vec = Word2Vec(embedding_size=embedding_size, window_size=window_size, learning_rate=lr, epochs=epochs)
-    logger.info("Building vocab")
-    word2vec.build_vocab(data)
-    # logger.info("generating_data")
-    # with open(f"x_data_limit={limit}.ch", "r") as file:
-    #     x = json.load(file)
-    # with open(f"y_data_limit={limit}.ch", "r") as file:
-    #     y = json.load(file)
-    # # x, y = word2vec.generate_training_data(data, limit=limit)
-    # # with open(f"x_data_limit={limit}.ch", "w") as file:
-    # #     json.dump(x, file)
-    # # with open(f"y_data_limit={limit}.ch", "w") as file:
-    # #     json.dump(y, file)
-    # word2vec.train(x, y)
-    file_name = f"data_dump_limit={limit}_e={epochs}_lr={lr}.npy"
-    # word2vec.dump(file_name)
-    word2vec.load(file_name)
-    print(word2vec.get_embedding("know"))
-
+def get_cosine_distance_groups(word2vec):
     words_g1 = ["like", "love", "hate"]
     words_g2 = ["good", "best", "nice", "bad", "worst", "terrible", "awful"]
     words_g3 = ["beer", "water", "drink", "mojito", "window", "dr", "weather"]
@@ -197,3 +173,46 @@ if __name__ == "__main__":
             file.write(word + "\n")
             file.write("\n".join(["\t".join([key, str(value)]) for key, value in dists.items()]))
             file.write("\n\n")
+
+
+if __name__ == "__main__":
+    cache_name = r"./projects/yelp_labeller/source/association_meter/cache"
+    with open(cache_name, "r") as file:
+        data = json.load(file)
+    # data = [["I", "love", "NLP", "and", "word2vec"], ["I", "love", "deep", "learning"], ["NLP", "is", "fun"]]
+
+    embedding_size = 100
+    window_size = 5
+    lr = 1e-5
+    epochs = 5
+    limit = 0  # 0 = no limit
+    weights_dump_file_name = f"data_dump_limit={limit}_e={epochs}_lr={lr}.npy"
+
+    word2vec = Word2Vec(embedding_size=embedding_size, window_size=window_size, learning_rate=lr, epochs=epochs)
+    logger.info("Building vocab")
+    word2vec.build_vocab(data)
+
+    if os.path.exists(weights_dump_file_name):
+        logger.info("Loading weights")
+        word2vec.load(weights_dump_file_name)
+    else:
+        x_data_file_name = f"x_data_limit={limit}.ch"
+        y_data_file_name = f"y_data_limit={limit}.ch"
+        if not os.path.exists(x_data_file_name) or not os.path.exists(y_data_file_name):
+            logger.info("Generating data")
+            x, y = word2vec.generate_training_data(data, limit=limit)
+            logger.info("saving_data")
+            with open(x_data_file_name, "w") as file:
+                json.dump(x, file)
+            with open(y_data_file_name, "w") as file:
+                json.dump(y, file)
+        else:
+            logger.info("Loading data")
+            with open(x_data_file_name, "r") as file:
+                x = json.load(file)
+            with open(y_data_file_name, "r") as file:
+                y = json.load(file)
+        logger.info("Training model")
+        word2vec.train(x, y)
+        logger.info("Saving weights")
+        word2vec.dump(weights_dump_file_name)
