@@ -54,7 +54,7 @@ def process_df(df: pd.DataFrame, path_template: str):
 
 def main(split_type: str = "train", n: int | None = 60_000):
     df = load_dataset(split_type, n=n)
-    save_path = "../../assets/annotated-corpus-v3/{split_type}/{{label}}/{{file_name}}.tsv"
+    save_path = "../../assets/annotated-corpus/{split_type}/{{label}}/{{file_name}}.tsv"
     save_path = save_path.format(split_type=split_type)
     process_df(df, save_path)
 

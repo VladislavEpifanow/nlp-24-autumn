@@ -1,12 +1,13 @@
+import json
+
 import numpy as np
 import pandas as pd
 from gensim.models import Word2Vec
 from tqdm import tqdm
 
 from projects.yelp_labeller.source.association_meter.main import apply_steps, steps
-from projects.yelp_labeller.source.classifier.main import load_dataset
 from projects.yelp_labeller.source.classifier.tokenizer import tokenize
-from projects.yelp_labeller.source.vectorizer.task_3 import get_token_vector
+from projects.yelp_labeller.source.vectorizer.task_3_4 import get_token_vector
 
 
 def get_text_embedding(text: str, w2v_model: Word2Vec) -> np.array:
@@ -26,6 +27,12 @@ def get_text_embedding(text: str, w2v_model: Word2Vec) -> np.array:
 
     return np.mean(text_emb, axis=0) if text_emb is not None else np.zeros(w2v_model.vector_size)
 
+def _get_text_emb(sents: list[str], w2v_model: Word2Vec) -> np.array:
+    if not sents:
+        return np.zeros(w2v_model.vector_size)
+    words_emb = [get_token_vector(word, w2v_model) for word in sents]
+    sent_emb = np.mean(np.asarray(words_emb), axis=0)
+    return sent_emb if words_emb and sent_emb is not None else np.zeros(w2v_model.vector_size)
 
 def process_df(df: pd.DataFrame, save_path: str, w2v_model: Word2Vec):
     file = open(save_path, "w")
@@ -39,13 +46,42 @@ def process_df(df: pd.DataFrame, save_path: str, w2v_model: Word2Vec):
     file.close()
 
 
+def process_data(data: list[list[str]], save_path: str, w2v_model: Word2Vec):
+    file = open(save_path, "w")
+    for idx, text in tqdm(enumerate(data), total=len(data)):
+        doc_name = f"{idx:06d}"
+        text_emb = _get_text_emb(text, w2v_model)
+
+        emb_to_text = "\t".join(map(str, text_emb.tolist()))
+        file.write(f"{doc_name}\t{emb_to_text}\n")
+    file.close()
+
+
 if __name__ == "__main__":
-    model = Word2Vec.load("w2v_model")
+    n: int | None = 100_000
+    model_path = "w2v_model_full"
+    save_path = "{split_type}_embeddings.tsv"
+    dataset_path = "../../assets/{split_type}.csv"
+    cache_name = "../../assets/cache_{split_type}"
 
-    split_type: str = "test"
-    n: int | None = None
-    save_path = f"{split_type}_embeddings.tsv"
-    dataset_path = r"..\..\assets\{split_type}.csv"
+    seed = 1
+    window = 5
+    sg = 0  # use CBOW
+    cbow_mean = 0
+    min_count = 1
+    vector_size = 100
 
-    df = load_dataset(split_type, n=n, dataset_path=dataset_path)
-    process_df(df, save_path, w2v_model=model)
+    with open(cache_name.format(split_type="train"), "r") as file:
+        data = json.load(file)
+
+    # model = Word2Vec(data, seed=seed, window=window, sg=sg, cbow_mean=cbow_mean, min_count=min_count,
+    #                  vector_size=vector_size)
+    # model.save(model_path)
+    model = Word2Vec.load(model_path)
+
+    # process_data(data, save_path.format(split_type="train"), w2v_model=model)
+
+    # df = load_dataset("test", dataset_path=dataset_path.format(split_type="test"))
+    with open(cache_name.format(split_type="test"), "r") as file:
+        data = json.load(file)
+    process_data(data, save_path.format(split_type="test"), w2v_model=model)

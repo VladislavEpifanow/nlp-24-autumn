@@ -1,0 +1,4 @@
+{"params": {"kernel": "linear", "random_state": 42}, "time": 195.80716753005981, "precision": 0.16030362917926572, "recall": 0.19827360432214444, "f1_score": 0.14012711981679596, "accuracy": 0.2015, "train_accuracy": 0.22776666666666667}
+{"params": {"kernel": "poly", "random_state": 42}, "time": 208.55859327316284, "precision": 0.17356336482306736, "recall": 0.2006265267998888, "f1_score": 0.11668821758795453, "accuracy": 0.2018, "train_accuracy": 0.22253333333333333}
+{"params": {"kernel": "rbf", "random_state": 42}, "time": 314.58430099487305, "precision": 0.16143494988340557, "recall": 0.19836619780475848, "f1_score": 0.11748077209608684, "accuracy": 0.2012, "train_accuracy": 0.22093333333333334}
+{"params": {"kernel": "sigmoid", "random_state": 42}, "time": 173.83162546157837, "precision": 0.13533193557901887, "recall": 0.1976656879251287, "f1_score": 0.11810810341358051, "accuracy": 0.2064, "train_accuracy": 0.20703333333333335}

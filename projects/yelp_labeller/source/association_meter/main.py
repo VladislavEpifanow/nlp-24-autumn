@@ -173,14 +173,14 @@ def trigram_log_likelihood(tokens):
 
 
 if __name__ == "__main__":
-    path = 'C:\\Users\\Alex\\PycharmProjects\\nlp-24-autumn\\projects\\yelp_labeller\\assets\\annotated-corpus-v3\\{split_type}'
-    split_type = "train"
+    path = r'C:\Users\Karpo\PycharmProjects\nlp-24-autumn\projects\yelp_labeller\assets\annotated-corpus\{split_type}'
+    split_type = "test"
     word_type = "token"
     n = 3
     # mesure = "t-score"
     mesure = "log"
 
-    cache_name = "cache"
+    cache_name = f"cache_{split_type}"
 
     if not os.path.exists(cache_name):
         data = process_data(path, split_type, word_type, 0)
