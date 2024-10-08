@@ -26,14 +26,13 @@ def get_text_embedding(text: str, w2v_model: Word2Vec) -> np.array:
 
 
 def process_df(df: pd.DataFrame, save_path: str, w2v_model: Word2Vec):
-    embeddings = []
+
     file = open(save_path, "w")
     for idx, row in tqdm(df.iterrows(), total=df.shape[0]):
         label, text = row["label"], row["text"]
         doc_name = f"{idx:06d}"
 
         text_emb = get_text_embedding(text, w2v_model)
-        emb_shape = text_emb.shape
 
         emb_to_text = "\t".join(map(str, text_emb.tolist()))
         file.write(f"{doc_name}\t{emb_to_text}\n")

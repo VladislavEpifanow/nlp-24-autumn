@@ -1,0 +1,21 @@
+put
+give	0.836028
+grass	0.66427034
+slow	0.75960076
+
+good
+best	0.88890874
+nice	0.9096327
+bad     0.9317043
+worst	0.8494984
+terrible	0.9108417
+awful	0.9047086
+
+beer
+water	0.86247414
+drink	0.8856167
+mojito	0.7172158
+window	0.743923
+license	0.73583275
+office	0.74142504
+
