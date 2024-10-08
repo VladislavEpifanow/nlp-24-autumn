@@ -46,4 +46,4 @@ demo.launch()
 - сохранять индекс на google disk, чтобы каждый раз его не пересоздавать;
 - использовать модели 7b (mistral и т.п.).
 
-Примеры классов, которые могут потребоваться для выполнения данного задания описаны в [ноутбуке](https://colab.research.google.com/drive/1iTkBKddoC5-JFTkwuhDChX8giSRhkS6j).
+Примеры классов, которые могут потребоваться для выполнения данного задания описаны в [ноутбуке](https://colab.research.google.com/drive/1wSNDNxGT0H0jhBRnatSWfD7chHXvGki7).
