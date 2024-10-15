@@ -27,30 +27,34 @@ def read_emb(file_path: str, n: int | None):
 
 
 def get_doc_label(split_type: str, n= None):
-    df = load_dataset(split_type=split_type)
-    return df["label"].to_numpy() if n is None else df["label"][:n].to_numpy()
+    df = load_dataset(split_type=split_type, n=n)
+    return df["label"].to_numpy()
 
 
-def load_emb_dataset(split: str, n = None):
-    emb_path = rf"..\..\assets\{split}_embeddings.tsv"
-    doc_ids_dict, x = read_emb(emb_path, n=n)
+def load_emb_dataset(emb_path, split: str, n = None):
+    my_emb_path = emb_path.format(split=split, n=n)
+    doc_ids_dict, x = read_emb(my_emb_path, n=n)
     print(x.shape)
 
-    y = get_doc_label(split, n=len(doc_ids_dict))
+    y = get_doc_label(split, n=n)
     print(y.shape)
     return x, y
 
 
 if __name__ == "__main__":
     random_state = 42
-    use_pca = True
-    n_components = 10
-    runs_file_path = "runs_log.txt" if not use_pca else f"runs_log_pca_{n_components}.txt"
+    n_components = 0
+    # runs_file_path = "runs_log_hug.txt" if not n_components else f"runs_log_pca_{n_components}_hug.txt"
+    runs_file_path = "runs_log_lib.txt" if not n_components else f"runs_log_pca_{n_components}_lib.txt"
 
-    x_train, y_train = load_emb_dataset('train', n=30_000)
-    x_test, y_test = load_emb_dataset('test', n=10_000)
+    # dataset_path = r"..\..\assets\{split}_embeddings_hug_{n}.tsv"
+    dataset_path = r"..\..\assets\{split}_embeddings_lib_{n}.tsv"
+    train_size, test_size = 10_000, 5_000
 
-    if use_pca:
+    x_train, y_train = load_emb_dataset(dataset_path, 'train', n=train_size)
+    x_test, y_test = load_emb_dataset(dataset_path, 'test', n=test_size)
+
+    if n_components:
         pca = PCA(n_components=n_components)
         x_train = pca.fit_transform(x_train)
         x_test = pca.transform(x_test)
@@ -82,7 +86,6 @@ if __name__ == "__main__":
         *_, accuracy = calculate_metrics(y_train_pred, y_train)
         data["train_accuracy"] = accuracy
 
-    print("\n".join(runs_data))
     with open(runs_file_path, "w+") as file:
         for run in runs_data:
             file.write(json.dumps(run)+"\n")
