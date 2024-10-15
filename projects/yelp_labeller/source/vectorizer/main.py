@@ -80,7 +80,7 @@ class Word2Vec:
     def train(self, x, y):
         self.initialize_weights()
         for epoch in tqdm(range(self.epochs), desc="training"):
-            for sent_idx, sent_data in enumerate(zip(x, y)):
+            for sent_idx, sent_data in tqdm(enumerate(zip(x, y)), position=True, total=len(x)):
                 word_oh, context = sent_data
                 x_vector = self.onehot(word_oh)
                 y_vector = self.onehot(context)
@@ -176,7 +176,7 @@ def get_cosine_distance_groups(word2vec):
 
 
 if __name__ == "__main__":
-    cache_name = r"./projects/yelp_labeller/source/association_meter/cache"
+    cache_name = r"../../assets/cache_train"
     with open(cache_name, "r") as file:
         data = json.load(file)
     # data = [["I", "love", "NLP", "and", "word2vec"], ["I", "love", "deep", "learning"], ["NLP", "is", "fun"]]
@@ -185,7 +185,7 @@ if __name__ == "__main__":
     window_size = 5
     lr = 1e-5
     epochs = 5
-    limit = 0  # 0 = no limit
+    limit = 100  # 0 = no limit
     weights_dump_file_name = f"data_dump_limit={limit}_e={epochs}_lr={lr}.npy"
 
     word2vec = Word2Vec(embedding_size=embedding_size, window_size=window_size, learning_rate=lr, epochs=epochs)

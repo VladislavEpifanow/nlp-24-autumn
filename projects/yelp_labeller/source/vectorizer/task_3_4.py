@@ -79,9 +79,6 @@ if __name__ == "__main__":
         for idx, word in enumerate(vector_dict.keys()):
             plt.annotate(word, (vector_dict_norm[idx, 0], vector_dict_norm[idx, 1]))
 
-        plt.savefig(f"pca_embeddings_{i}.png")
-        plt.clf()
-        plt.cla()
-        plt.close()
+    plt.savefig(f"pca_embeddings.png")
 
     ## Task 7

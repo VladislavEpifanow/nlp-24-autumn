@@ -41,27 +41,28 @@ def process_df(df: pd.DataFrame, save_path: str, w2v_model: Word2Vec):
 if __name__ == "__main__":
     embedding_size = 100
     window_size = 5
-    lr = 0.00025
+    lr = 1e-5
     epochs = 5
-    limit = 5
+    limit = 100
 
     word2vec = Word2Vec(embedding_size=embedding_size, window_size=window_size, learning_rate=lr, epochs=epochs)
 
-    cache_name = r"./projects/yelp_labeller/source/association_meter/cache"
+    cache_name = r"../../assets/cache_train"
     with open(cache_name, "r") as file:
         data = json.load(file)
     word2vec.build_vocab(data)
-    file_name = f"data_dump_limit={limit}_e={epochs}_lr={lr}.npy"
+
+
+    file_name = f"data_dump_limit={limit}_e={epochs}_lr={lr}_ce=2.npy"
     word2vec.load(file_name)
 
-    text = "I like health insurance. love dr"
-
-    # print(get_text_embedding(text, word2vec))
+    text = "I like health insurance"
+    print(get_text_embedding(text, word2vec))
 
     split_type: str = "test"
     n: int | None = 5
-    save_path = f"{split_type}_embeddings.tsv"
-    dataset_path = r".\projects\yelp_labeller\assets\{split_type}.csv"
+    save_path = f"{split_type}_my_embeddings_e=2.tsv"
+    dataset_path = "../../assets/{split_type}.csv"
 
     df = load_dataset(split_type, n=n, dataset_path=dataset_path)
     process_df(df, save_path, w2v_model=word2vec)

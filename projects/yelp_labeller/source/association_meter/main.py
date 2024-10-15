@@ -177,13 +177,14 @@ if __name__ == "__main__":
     split_type = "test"
     word_type = "token"
     n = 3
+    dataset_limit = 0
     # mesure = "t-score"
     mesure = "log"
 
-    cache_name = f"cache_{split_type}"
+    cache_name = f"{split_type}_tokens_{dataset_limit}"
 
     if not os.path.exists(cache_name):
-        data = process_data(path, split_type, word_type, 0)
+        data = process_data(path, split_type, word_type, limit=dataset_limit)
         json.dump(data, open(cache_name, "w"))
     else:
         data = json.load(open(cache_name, "r"))

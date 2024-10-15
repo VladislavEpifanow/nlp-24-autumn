@@ -28,6 +28,7 @@ def get_text_embedding(text: str, w2v_model: Word2Vec) -> np.array:
 
     return np.mean(text_emb, axis=0) if text_emb is not None else np.zeros(w2v_model.vector_size)
 
+
 def _get_text_emb(sents: list[str], w2v_model: Word2Vec) -> np.array:
     if not sents:
         return np.zeros(w2v_model.vector_size)
@@ -90,37 +91,24 @@ def process_data(data: list[list[str]], save_path: str, w2v_model: Word2Vec):
 
 
 if __name__ == "__main__":
-    n: int | None = 100_000
-    model_path = "w2v_model_full"
-    save_path = "{split_type}_embeddings.tsv"
+    model_path = "w2v_model_full_v2"
+    save_path = "{split_type}_embeddings_v22.tsv"
     dataset_path = "../../assets/{split_type}.csv"
     cache_name = "../../assets/cache_{split_type}"
 
-    seed = 1
-    window = 5
-    sg = 0  # use CBOW
-    cbow_mean = 0
-    min_count = 1
-    vector_size = 100
-
     with open(cache_name.format(split_type="train"), "r") as file:
-        data = json.load(file)
-
-    # Обучение модели
-    # model = Word2Vec(data, seed=seed, window=window, sg=sg, cbow_mean=cbow_mean, min_count=min_count,
-    #                  vector_size=vector_size)
-    # model.save(model_path)
+        data = json.load(file) ## 60_000
 
     # Импорт модели
     model = Word2Vec.load(model_path)
 
     # Обработка TRAIN
-    # process_data(data, save_path.format(split_type="train"), w2v_model=model)
-
+    process_data(data, save_path.format(split_type="train"), w2v_model=model)
+    #
     # Обработка TEST
     # df = load_dataset("test", dataset_path=dataset_path.format(split_type="test"))
-    # with open(cache_name.format(split_type="test"), "r") as file:
-    #     data = json.load(file)
-    # process_data(data, save_path.format(split_type="test"), w2v_model=model)
+    with open(cache_name.format(split_type="test"), "r") as file:
+        data = json.load(file)
+    process_data(data, save_path.format(split_type="test"), w2v_model=model)
 
-    get_cosine_distance_groups(model)
+    # get_cosine_distance_groups(model)

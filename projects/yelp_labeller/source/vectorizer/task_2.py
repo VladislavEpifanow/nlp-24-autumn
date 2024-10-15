@@ -43,4 +43,4 @@ tfidf_vector = text_to_tfidf(text, word_index, td_matrix)
 
 print(tfidf_vector)
 
-np.savetxt('task_2_tfidf_vector.txt', tfidf_vector, delimiter=',')
+np.savetxt('task_2_tfidf_vector.txt', tfidf_vector, delimiter=',', fmt='%d')
