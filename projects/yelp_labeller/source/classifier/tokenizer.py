@@ -24,8 +24,11 @@ pattern = pattern.format(abbr_patterns="(" + "|".join(english_abbr) + ")",
 word_pattern = re.compile(pattern)
 # print(word_pattern.pattern.replace(r"//", r"/"))
 
+def split_to_sentence(text: str) -> list[str]:
+    return list(filter(lambda x: len(x) if x else False, sent_pattern.split(text)))
 
-def tokenize(text: str):
+
+def tokenize(text: str) -> list[list[str]]:
     tokenized_sentences = []
     split_sentences = list(filter(lambda x: len(x) if x else False, sent_pattern.split(text)))
     # print(sent_pattern.pattern.replace(r"\\", "\\"))

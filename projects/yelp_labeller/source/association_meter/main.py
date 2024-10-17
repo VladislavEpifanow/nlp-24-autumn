@@ -29,6 +29,15 @@ def data_iterator(path: str, split_type: str):
             yield data
     return
 
+steps = []
+# Шаг 2
+punkt_regex = r"[^\P{P}-]+"
+punkt_step = lambda x: regex.sub(punkt_regex, "", x)
+steps.append(punkt_step)
+# Шаг 3
+steps.append(lambda x: x.lower())
+# Шаг 4
+steps.append(lambda x: x if x not in stopwords else None)
 
 # Шаг 5
 word_types = {"token": 0,
@@ -164,27 +173,18 @@ def trigram_log_likelihood(tokens):
 
 
 if __name__ == "__main__":
-    steps = []
-    # Шаг 2
-    punkt_regex = r"[^\P{P}-]+"
-    punkt_step = lambda x: regex.sub(punkt_regex, "", x)
-    steps.append(punkt_step)
-    # Шаг 3
-    steps.append(lambda x: x.lower())
-    # Шаг 4
-    steps.append(lambda x: x if x not in stopwords else None)
-
-    path = 'C:\\Users\\Alex\\PycharmProjects\\nlp-24-autumn\\projects\\yelp_labeller\\assets\\annotated-corpus-v3\\{split_type}'
-    split_type = "train"
+    path = r'C:\Users\Karpo\PycharmProjects\nlp-24-autumn\projects\yelp_labeller\assets\annotated-corpus\{split_type}'
+    split_type = "test"
     word_type = "token"
     n = 3
+    dataset_limit = 0
     # mesure = "t-score"
     mesure = "log"
 
-    cache_name = "cache"
+    cache_name = f"{split_type}_tokens_{dataset_limit}"
 
     if not os.path.exists(cache_name):
-        data = process_data(path, split_type, word_type, 0)
+        data = process_data(path, split_type, word_type, limit=dataset_limit)
         json.dump(data, open(cache_name, "w"))
     else:
         data = json.load(open(cache_name, "r"))

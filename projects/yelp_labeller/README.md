@@ -1,5 +1,15 @@
 # Yelp labeller
 
+## Структура
+
+- [Лабораторная 1](./source/classifier)
+- [Лабораторная 2](./source/association_meter)
+- [Лабораторная 3](./source/vectorizer)
+- [Лабораторная 4](./source/classify)
+- [Лабораторная 5](./source/lab_5.ipynb)
+
+## Описание
+
 Данный проект предназначен для обработки датасета и дальнейшего определения рейтинга отзыва по его тексту.
 
 Проект состоит из модуля `classifier`, в котором:
@@ -48,4 +58,23 @@ python -m association_meter.main
 
 ```sh
 python .\projects\yelp_labeller\source\association_meter\main.py
+```
+
+## Запуск лаба 3
+
+```sh
+python -m vectorizer.main
+python -m vectorizer.save_emb_lib
+```
+
+## Запуск лаба 4
+
+```sh
+python -m classify.main
+```
+
+## Запуск лаба 5
+
+```sh
+python -m notebook
 ```
