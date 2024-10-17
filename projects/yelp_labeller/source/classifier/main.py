@@ -10,7 +10,7 @@ from projects.yelp_labeller.source.classifier.tokenizer import tokenize
 
 # nltk.download('wordnet')
 
-def load_dataset(split_type="train", n: int | None = None, dataset_path = "../../assets/{split_type}.csv", random_state=42):
+def load_dataset(split_type="train", n: int | None = None, dataset_path = "../../assets/{split_type}.csv", random_state=42) -> pd.DataFrame:
     assert split_type == "train" or split_type == "test"
     dataset_path = dataset_path.format(split_type=split_type)
     if not os.path.exists(dataset_path):

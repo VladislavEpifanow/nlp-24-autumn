@@ -41,4 +41,3 @@ if __name__ == "__main__":
             td_matrix[idx, word_index[word]] += 1
 
     np.savetxt("task_1_td.ch", td_matrix, fmt='%d')
-

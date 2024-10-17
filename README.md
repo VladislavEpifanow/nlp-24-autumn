@@ -25,4 +25,4 @@
 | Project name                               | Student name                  |
 |--------------------------------------------|-------------------------------|
 | [emoji-labeller](/projects/emoji-labeller) | Иванов Иван Иванович          |
-| [yelp-labeller](/projects/yelp-labeller)                      | Карпович Александр Евгеньевич |
+| [yelp-labeller](/projects/yelp_labeller)   | Карпович Александр Евгеньевич |

@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 from sentence_transformers import SentenceTransformer
-from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 
 from projects.yelp_labeller.source.classifier.main import load_dataset
