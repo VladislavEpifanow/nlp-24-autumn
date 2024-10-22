@@ -7,6 +7,7 @@
 - [Лабораторная 3](./source/vectorizer)
 - [Лабораторная 4](./source/classify)
 - [Лабораторная 5](./source/lab_5.ipynb)
+- [Лабораторная 6](./source/lab_6.ipynb)
 
 ## Описание
 
