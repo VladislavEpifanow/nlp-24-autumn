@@ -22,10 +22,10 @@
 
 Результаты выполнения лабораторных работ оформляются в виде проектов и размещаются в отдельных директориях внутри каталога [projects](/projects) (также см. [указания по выполнению лабораторных работ](/tasks/README.md)). В качестве названия директории испоьзуется название соответствующего проекта, которое необходимо указывать в соответствии с конвенцией `kebab-case`. Соответствие между названием проекта и ФИО студента задается в следующей таблице:
 
-| Project name                                      | Student name |
-|---------------------------------------------------| --- |
-| [emoji-labeller](/projects/emoji-labeller)        | Иванов Иван Иванович |
-| [danishevskiy-lab](/projects/danishevskiy-lab)    | Данишевский Никита Сергеевич |
-| [ag-news-tasks](/projects/ag-news-tasks)          | Епифанов Владислав Андреевич |
+| Project name | Student name |
+| --- | --- |
+| [emoji-labeller](/projects/emoji-labeller) | Иванов Иван Иванович |
+| [danishevskiy-lab](/projects/danishevskiy-lab) | Данишевский Никита Сергеевич |
+| [ag-news-tasks](/projects/ag-news-tasks) | Епифанов Владислав Андреевич |
 | [ vas-news-labeller](/projects/vas-news-labeller) | Лисицина Василиса Васильевна |
-| [yelp-labeller](/projects/yelp_labeller)          | Карпович Александр Евгеньевич |
+| [yelp-labeller](/projects/yelp_labeller) | Карпович Александр Евгеньевич |
