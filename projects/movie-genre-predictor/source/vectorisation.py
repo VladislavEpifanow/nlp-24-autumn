@@ -106,8 +106,6 @@ from scipy import spatial
 def cosine_sim_lib(vec1, vec2):
     return 1 - spatial.distance.cosine(vec1, vec2)
 
-# %%
-%pip install scikit-learn
 
 # %%
 words = list(model.wv.key_to_index)

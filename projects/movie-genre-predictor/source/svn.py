@@ -143,10 +143,10 @@ def find_best_model_by_metrics(metric_model, metrics_names):
         print(f"Metric {name}: model {k} with mean value {np.mean(v)}")
 
 # %%
-metrics_1, model_params_1 = grid_search(X, y, param_grid)
+metrics, model_params_1 = grid_search(X, y, param_grid)
 
 # %%
-find_best_model_by_metrics(metrics_1, ["accuracy", "precision", "recall", "fscore"])
+find_best_model_by_metrics(metrics, ["accuracy", "precision", "recall", "fscore"])
 
 # %%
 best_model = "model_6"
