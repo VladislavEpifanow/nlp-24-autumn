@@ -143,7 +143,9 @@ if __name__ == "__main__":
     nltk_text = nltk.Text(tokens)
     finder_thr = TrigramCollocationFinder.from_words(nltk_text)
     print("\n\n NLTK Mutual information:")
-    print(finder_thr.nbest(trigram_measures.pmi, 20))
+    print(finder_thr.nbest(trigram_measures.mi_like, 20))
+    print("\n\n NLTK Score:")
+    print(finder_thr.nbest(trigram_measures.student_t, 20))
     
 
     # my implementation
