@@ -11,34 +11,38 @@ nltk.download('wordnet')
 
 
 def split_to_words(sentence):
+    # should be somewhere else, here just to avoid scrolling
+    raw = re.sub(r'\b(MD|PhD|Mr|Jr|M\.?D\.?|P\.?h\.?D\.?|Mister|Junior)\s+(\w+)\b', "Title", raw)
+    raw = re.sub(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', "email", raw)
+    raw = re.sub(r'^\d{2}[ ](January|February|March|April|May|June|July|August|September|October|November|December)[ ]\d{2,4}', "date", raw)
+    raw = re.sub(r'^\d{2,4}[-/.]\d{2,4}[-/.]\d{2,4}', "date", raw)
+
+
     words = re.findall(r"(((?<=^)|(?<= )|(?<=\"))(\w+[-,.@]?)+\w*\.?)", sentence)
     words = list(map(lambda x: x[0], words))
     return words
 
 
 def split_to_sentences(lines):
+    
     raw = "".join(lines)
 
     # remove non-ascii characters
     raw = re.sub(r'[^\x00-\x7f]', '', raw)
 
-    # remove extra whitespace
+    # remove extra whitespace. Could've used \s
     raw = re.sub(r" {2,}|\t+", " ", raw)  
     raw = re.sub(r"^ ", "", raw)
     raw = re.sub("\n{2,}", "\n", raw)  
     raw = re.sub("\n ", "\n", raw)  
 
-
-    # should be somewhere else, here just to avoid scrolling
-    raw = re.sub(r'\b(MD|PhD|Mr|Jr|M\.?D\.?|P\.?h\.?D\.?|Mister|Junior)\s+(\w+)\b', "person", raw)
-    raw = re.sub(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', "email", raw)
-    raw = re.sub(r'^\d{2}[ ](January|February|March|April|May|June|July|August|September|October|November|December)[ ]\d{2,4}', "date", raw)
-    raw = re.sub(r'^\d{2,4}[-/.]\d{2,4}[-/.]\d{2,4}', "date", raw)
-
     # split into sentences
     # sentences = re.split(r"[\.,!?] ", raw)  # easier but way dumber
     sentences = re.split(
         r"(((?<!\w\.\w.)(?<!\s\w\.)(?<![A-Z][a-z]\.)(?<=\.|\?|\!)\s(?=[A-Z]))|((?<![\,\-\:])\n(?=[A-Z]|\" )))", raw)[::4]
+    
+    # todo recover punctuation, registers (upper-lower), individual tokens 
+    # at least for first column 
 
     return sentences
 

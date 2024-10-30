@@ -1,3 +1,5 @@
 assets
 .vscode
 __pycache__
+*.ipynb
+.python-version 
