@@ -14,7 +14,7 @@ drive.mount('/content/drive')
 
 !pip install huggingface-hub
 !pip install bert_score
-!huggingface-cli login --token=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
+!huggingface-cli login 
 !huggingface-cli download TheBloke/Mistral-7B-OpenOrca-GGUF mistral-7b-openorca.Q4_K_M.gguf --local-dir . --local-dir-use-symlinks False
 
 
