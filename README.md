@@ -28,4 +28,5 @@
 | [danishevskiy-lab](/projects/danishevskiy-lab) | Данишевский Никита Сергеевич |
 | [ag-news-tasks](/projects/ag-news-tasks) | Епифанов Владислав Андреевич |
 | [ vas-news-labeller](/projects/vas-news-labeller) | Лисицина Василиса Васильевна |
+| [yelp-labeller](/projects/yelp_labeller) | Карпович Александр Евгеньевич |
 | [movie-genre-predictor](/projects/movie-genre-predictor) | Филиппенко Илья Павлович |
