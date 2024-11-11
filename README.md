@@ -30,3 +30,4 @@
 | [ vas-news-labeller](/projects/vas-news-labeller) | Лисицина Василиса Васильевна |
 | [yelp-labeller](/projects/yelp_labeller) | Карпович Александр Евгеньевич |
 | [movie-genre-predictor](/projects/movie-genre-predictor) | Филиппенко Илья Павлович |
+| [kobzar-news](/projects/kobzar-news) | Кобзарь Дарья Сергеевна |
