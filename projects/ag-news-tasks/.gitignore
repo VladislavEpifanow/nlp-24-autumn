@@ -1,2 +1,5 @@
 /data
 /assets
+.ipynb_checkpoints
+*.model
+.virtual_documents
