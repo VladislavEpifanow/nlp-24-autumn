@@ -3,3 +3,4 @@
 .ipynb_checkpoints
 *.model
 .virtual_documents
+/.virtual_documents
