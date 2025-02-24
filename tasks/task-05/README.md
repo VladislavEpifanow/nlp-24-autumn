@@ -30,7 +30,7 @@
 - подключаться к окружению с GPU (T4);
 - сохранять индекс на google disk, чтобы каждый раз его не пересоздавать.
 
-Примеры классов, которые могут потребоваться для выполнения данного задания описаны в [ноутбуке](https://colab.research.google.com/drive/1XywdDFIza0iu4HX47e7HaXkEO3T-VBRr#scrollTo=tcb0TE2y9o0S):
+Примеры классов, которые могут потребоваться для выполнения данного задания описаны в [ноутбуке](https://colab.research.google.com/drive/1exgj7OnV7Sms_x2soLJ-F6nnWlynIF9N):
 
 ```python
 class Loader:
